@@ -5,8 +5,6 @@
 
 **KineticTree** is an interactive, gaming-inspired Binary Search Tree (BST) visualizer. It bridges the gap between abstract data structure logic and engaging UI/UX by using asynchronous animations to "walk" through the tree-building process.
 
-
-
 ---
 
 ## 🚀 Overview
@@ -62,6 +60,5 @@ Start the development server:
 
 Bash
 npm run dev
-## 👤 Developer: Cynthia Nwume Programming Graduate | Sheridan College
 
-## Turning abstract logic into kinetic experiences.
+Turning abstract logic into kinetic experiences.
