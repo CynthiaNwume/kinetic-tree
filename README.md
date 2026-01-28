@@ -1,4 +1,7 @@
 # 👾 KineticTree V1.0
+<p align="center">
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExMmxwY3cwd3diOW1uejRhNGp1OW1jMDlxMWs3ZmFscXBkMmc5ZTVmbSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WbJWzBNV43eEegk12d/giphy.gif" width="700" alt="KineticTree Demo Animation" />
+</p>
 
 **KineticTree** is an interactive, gaming-inspired Binary Search Tree (BST) visualizer. It bridges the gap between abstract data structure logic and engaging UI/UX by using asynchronous animations to "walk" through the tree-building process.
 
