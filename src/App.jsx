@@ -1,42 +1,24 @@
 /* eslint-disable react-hooks/set-state-in-effect */
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { motion as Motion, AnimatePresence } from 'framer-motion';
 import './App.css';
 
 /**
- * --- BST LOGIC (OUTSIDE COMPONENT) ---
+ * --- BST UTILITY FUNCTIONS ---
  */
-
-// Inserts a new value into the tree recursively
 const insertNode = (node, value) => {
-  if (node === null) {
-    return { 
-      id: Math.random().toString(36).substr(2, 9), 
-      value, 
-      left: null, 
-      right: null, 
-      x: 0, 
-      y: 0 
-    };
-  }
-  if (value < node.value) {
-    node.left = insertNode(node.left, value);
-  } else if (value > node.value) {
-    node.right = insertNode(node.right, value);
-  }
+  if (node === null) return { id: Math.random().toString(36).substr(2, 9), value, left: null, right: null, x: 0, y: 0 };
+  if (value < node.value) node.left = insertNode(node.left, value);
+  else if (value > node.value) node.right = insertNode(node.right, value);
   return node;
 };
 
-// Calculates coordinates. Uses 'depth' to pull the tree UP as it grows.
 const calculatePositions = (node, x, y, spacing, depth = 0) => {
   if (!node) return;
-
-  // LIFT LOGIC: As depth increases, we subtract from Y to shift the tree upward.
+  // Lift Logic: Shifts tree upward as it grows
   const verticalOffset = y - (depth * 25); 
-  
   node.x = x;
   node.y = verticalOffset;
-
   calculatePositions(node.left, x - spacing, y + 80, spacing / 1.6, depth + 1);
   calculatePositions(node.right, x + spacing, y + 80, spacing / 1.6, depth + 1);
 };
@@ -62,9 +44,6 @@ const getConnections = (node, connections = []) => {
   return connections;
 };
 
-/**
- * --- MAIN COMPONENT ---
- */
 export default function App() {
   // 1. STATE INITIALIZATION
   const [_TREE, _SET_TREE] = useState(null);
@@ -73,30 +52,33 @@ export default function App() {
   const [inputValue, setInputValue] = useState('');
   const [lives, setLives] = useState(5);
   const [score, setScore] = useState(0);
-  const [highScore, setHighScore] = useState(localStorage.getItem('bst_high_score') || 0);
+  const [highScore, setHighScore] = useState(parseInt(localStorage.getItem('bst_high_score')) || 0);
   const [status, setStatus] = useState('SYSTEM_IDLE');
   const [isQuizMode, setIsQuizMode] = useState(false);
   const [quizValue, setQuizValue] = useState(null);
   const [isGlitched, setIsGlitched] = useState(false);
   const [isJumping, setIsJumping] = useState(false);
 
-  const getCenterX = () => (window.innerWidth - 320) / 2;
+  // Responsive Helpers
+  const isMobile = () => window.innerWidth < 768;
+  const getCenterX = useCallback(() => isMobile() ? window.innerWidth / 2 - 23 : (window.innerWidth - 320) / 2 - 23, []);
+
   const [heroPos, setHeroPos] = useState({ x: getCenterX(), y: 80 });
 
   /**
-   * 2. RESET LOGIC (Hoisted high)
+   * 2. CORE ACTIONS
    */
-  const handleReset = () => {
+  const handleReset = useCallback(() => {
     _SET_TREE(null);
     setLives(5);
     setScore(0);
     setIsQuizMode(false);
     setHeroPos({ x: getCenterX(), y: 80 });
-    setStatus('SYSTEM_REBOOTED // MEMORY_PURGED');
-  };
+    setStatus('SYSTEM_REBOOTED');
+  }, [getCenterX]);
 
   /**
-   * 3. LIFECYCLE EFFECTS
+   * 3. EFFECTS
    */
   useEffect(() => {
     const name = prompt("IDENTIFY YOURSELF, OPERATOR:");
@@ -106,13 +88,14 @@ export default function App() {
 
   useEffect(() => {
     if (lives <= 0) {
-      setStatus(`CRITICAL_ERROR: ${nickname} EXPIRED. REBOOTING...`);
-      setTimeout(() => handleReset(), 3000);
+      setStatus(`CRITICAL_ERROR: ${nickname} EXPIRED.`);
+      const timer = setTimeout(() => handleReset(), 3000);
+      return () => clearTimeout(timer);
     }
-  }, [lives, nickname]);
+  }, [lives, nickname, handleReset]);
 
   /**
-   * 4. ANIMATION & GAMEPLAY
+   * 4. GAME LOGIC
    */
   const walkPath = async (value) => {
     let current = _TREE;
@@ -129,51 +112,51 @@ export default function App() {
     }
   };
 
+  const executeRealInsert = async (val) => {
+    await walkPath(val);
+    const newTree = _TREE ? JSON.parse(JSON.stringify(_TREE)) : null;
+    const updatedTree = insertNode(newTree, val);
+    const horizontalSpacing = isMobile() ? 70 : 180;
+    calculatePositions(updatedTree, getCenterX(), 80, horizontalSpacing);
+    _SET_TREE(updatedTree);
+    setStatus(`DATA_STABILIZED, ${nickname}.`);
+    setInputValue('');
+  };
+
   const handleInsert = async (e) => {
     e.preventDefault();
     const val = parseInt(inputValue);
     if (isNaN(val)) return;
-
-    const nodeCount = flattenTree(_TREE).length;
-    if (nodeCount >= 6 && !isQuizMode) {
+    if (flattenTree(_TREE).length >= 5 && !isQuizMode) {
       setIsQuizMode(true);
       setQuizValue(val);
-      setStatus(`CHALLENGE: ${nickname}, WHERE DOES ${val} GO?`);
+      setStatus(`CHALLENGE: WHERE DOES ${val} GO?`);
       return;
     }
     await executeRealInsert(val);
   };
 
-  const executeRealInsert = async (val) => {
-    await walkPath(val);
-    const newTree = _TREE ? JSON.parse(JSON.stringify(_TREE)) : null;
-    const updatedTree = insertNode(newTree, val);
-    calculatePositions(updatedTree, getCenterX(), 80, 200);
-    _SET_TREE(updatedTree);
-    setStatus(`DATA_STABILIZED. WELL DONE, ${nickname}.`);
-    setInputValue('');
-  };
-
-  const handleQuizAnswer = async (direction) => {
+  const handleQuizAnswer = (direction) => {
     let correctDir = quizValue < _TREE.value ? 'left' : 'right';
     if (direction === correctDir) {
       const newScore = score + 1;
       setScore(newScore);
-      if (newScore * 100 > highScore) {
-        setHighScore(newScore * 100);
-        localStorage.setItem('bst_high_score', newScore * 100);
+      const currentXP = newScore * 100;
+      if (currentXP > highScore) {
+        setHighScore(currentXP);
+        localStorage.setItem('bst_high_score', currentXP.toString());
       }
-      setStatus(`CRITICAL_HIT! +100XP`);
+      setStatus(`CORRECT! +100XP`);
       setIsJumping(true); 
       setTimeout(() => setIsJumping(false), 500);
     } else {
       setLives(l => l - 1);
       setIsGlitched(true); 
-      setStatus(`SYSTEM_COMPROMISED: -1 LIFE`);
+      setStatus(`SYSTEM_COMPROMISED!`);
       setTimeout(() => setIsGlitched(false), 600);
     }
     setIsQuizMode(false);
-    await executeRealInsert(quizValue);
+    executeRealInsert(quizValue);
   };
 
   if (!isEntryDone) return <div className="loading">INITIALIZING...</div>;
@@ -181,10 +164,10 @@ export default function App() {
   return (
     <div className={`app-container ${isGlitched ? 'glitch-active' : ''}`}>
       <header className="header">
-        <div className="user-profile" style={{paddingTop: '10px'}}>
-          <span>OPERATOR: {nickname} </span>
-          <span>LIVES: {"❤️".repeat(lives)} </span>
-          <span>XP: {score * 100} (BEST: {highScore})</span>
+        <div className="user-profile">
+           <span>OPERATOR: {nickname} </span>
+           <span>LIVES: {"❤️".repeat(lives)} </span>
+           <span>XP: {score * 100} (BEST: {highScore})</span>
         </div>
         <div className="status-bar">{status}</div>
       </header>
@@ -194,23 +177,21 @@ export default function App() {
           {!isQuizMode ? (
             <div className="control-panel">
               <form onSubmit={handleInsert}>
-                <input type="number" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="DATA_ID..." />
+                <input type="number" value={inputValue} onChange={(e) => setInputValue(e.target.value)} placeholder="DATA..." />
                 <button type="submit">INSERT</button>
               </form>
             </div>
           ) : (
-            <div className="quiz-panel" style={{position: 'absolute', top: '20px', left: '20px', zIndex: 60, background: 'rgba(0,0,0,0.8)', padding: '15px', border: '1px solid #bc13fe'}}>
-              <h3 style={{fontSize: '12px', color: '#bc13fe'}}>GO LEFT OR RIGHT?</h3>
+            <div className="control-panel quiz-btns">
               <button onClick={() => handleQuizAnswer('left')}>LEFT</button>
               <button onClick={() => handleQuizAnswer('right')}>RIGHT</button>
             </div>
           )}
 
-          <Motion.div animate={{ x: heroPos.x, y: isJumping ? heroPos.y - 70 : heroPos.y - 40 }} className="hero" style={{position: 'absolute', fontSize: '30px', zIndex: 100}}>
+          <Motion.div animate={{ x: heroPos.x + 10, y: isJumping ? heroPos.y - 70 : heroPos.y - 40 }} className="hero">
             👾
           </Motion.div>
 
-          {/* SVG BRANCHES: centered with +23 offset */}
           <svg className="tree-svg">
             {getConnections(_TREE).map((conn, i) => (
               <Motion.line 

@@ -46,6 +46,22 @@ This project was built to demonstrate proficiency in modern React development an
 
 ---
 
+## 🚀 New in V2.0
+* **Recursive Lift Logic:** Implemented a custom positioning algorithm that "lifts" the tree upward as it grows, ensuring the visualization stays framed on all screen sizes.
+* **Full Mobile Responsiveness:** Re-engineered the layout using CSS Flexbox and Media Queries to stack the UI vertically on mobile devices.
+* **The Gauntlet (Quiz Mode):** Challenges users to predict node placement once the tree reaches a specific complexity, tracking lives and score.
+* **Persistent Leaderboard:** Integrated LocalStorage to track and save your "Best XP" across browser sessions.
+* **Neon Node UI:** Stylized data nodes with neon cyan containers and digital "Glow" effects.
+
+---
+
+## 🎮 How to Play
+1. **Identify:** Enter your operator nickname.
+2. **Insert:** Feed data into the system.
+3. **Challenge:** When prompted, choose if the data should go **LEFT** or **RIGHT**.
+4. **Survive:** Don't let your lives reach zero, or the system will trigger a **FORCE_REBOOT**.
+---
+
 ## 📂 Installation & Setup
 
 1. **Clone the repository:**
