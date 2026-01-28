@@ -1,0 +1,157 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+:root {
+  --neon-blue: #00f3ff;
+  --neon-purple: #bc13fe;
+  --bg-dark: #050505;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-dark);
+  color: white;
+  font-family: 'Orbitron', sans-serif;
+  overflow: hidden;
+}
+
+/* Retro Scanline Overlay */
+.app-container::before {
+  content: " ";
+  display: block;
+  position: absolute;
+  top: 0; left: 0; bottom: 0; right: 0;
+  background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), 
+              linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03));
+  z-index: 100;
+  background-size: 100% 2px, 3px 100%;
+  pointer-events: none;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+}
+
+.header {
+  height: 80px;
+  text-align: center;
+  border-bottom: 1px solid rgba(188, 19, 254, 0.3);
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.status-bar {
+  color: var(--neon-blue);
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.visualizer-container {
+  position: relative;
+  background: radial-gradient(circle at center, #111 0%, #050505 100%);
+  overflow: hidden;
+}
+
+.control-panel {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  z-index: 50;
+  background: rgba(0, 0, 0, 0.7);
+  padding: 15px;
+  border: 1px solid var(--neon-blue);
+  box-shadow: 0 0 10px rgba(0, 243, 255, 0.2);
+}
+
+input {
+  background: transparent;
+  border: 1px solid var(--neon-blue);
+  color: white;
+  padding: 8px;
+  font-family: 'Orbitron';
+}
+
+button {
+  background: var(--neon-blue);
+  border: none;
+  padding: 8px 15px;
+  margin-left: 10px;
+  font-family: 'Orbitron';
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.sidebar {
+  background: rgba(10, 10, 10, 0.95);
+  border-left: 1px solid var(--neon-purple);
+  padding: 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start; /* Changed to top-aligned */
+  gap: 20px; /* Adds spacing between sections */
+  overflow-y: auto; /* Allows scrolling if you add a lot of text */
+  z-index: 10;
+}
+
+.intel-title {
+  color: var(--neon-purple);
+  font-size: 13px;
+  margin-bottom: 8px;
+  border-bottom: 1px solid rgba(188, 19, 254, 0.4);
+  padding-bottom: 4px;
+  letter-spacing: 1px;
+}
+
+.intel-text {
+  font-size: 11px;
+  color: #aaa;
+  line-height: 1.5;
+  margin: 0 0 15px 0;
+}
+
+.tech-tag {
+  display: inline-block;
+  background: rgba(0, 243, 255, 0.1);
+  color: var(--neon-blue);
+  padding: 2px 6px;
+  margin: 2px;
+  font-size: 10px;
+  border: 1px solid rgba(0, 243, 255, 0.3);
+}
+
+.reboot-btn {
+  margin-top: auto; /* Pushes button to the very bottom */
+  background: transparent;
+  border: 1px solid #ff0055;
+  color: #ff0055;
+  padding: 12px;
+  cursor: pointer;
+  font-family: 'Orbitron';
+  transition: all 0.3s;
+}
+
+.reboot-btn:hover {
+  background: #ff0055;
+  color: white;
+}
+
+.footer {
+  height: 40px;
+  background: #000;
+  border-top: 1px solid var(--neon-purple);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  color: rgba(188, 19, 254, 0.7);
+}
