@@ -179,7 +179,7 @@ button:hover {
 
 .reboot-btn {
   margin-top: auto; 
-  margin-bottom: 40px; /* Add this line to push it up from the bottom */
+  margin-bottom: 40px; 
   background: transparent;
   border: 1px solid #ff0055;
   color: #ff0055;
@@ -218,3 +218,39 @@ button:hover {
   color: rgba(188, 19, 254, 0.7);
   letter-spacing: 1px;
 }
+
+/* --- INTELLIGENCE REPORT STYLING --- */
+.academy-container {
+  height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center;
+  background: radial-gradient(circle, #1a1a1a 0%, #050505 100%); position: relative;
+}
+
+.academy-content {
+  max-width: 800px; width: 90%; max-height: 85vh; overflow-y: auto;
+  background: rgba(10, 10, 10, 0.95); border: 1px solid var(--neon-purple);
+  padding: 40px; position: relative; z-index: 110; text-align: left;
+  box-shadow: 0 0 30px rgba(188, 19, 254, 0.2);
+}
+
+.academy-content::-webkit-scrollbar { width: 4px; }
+.academy-content::-webkit-scrollbar-thumb { background: var(--neon-purple); }
+
+.academy-header { border-bottom: 2px solid var(--neon-blue); margin-bottom: 30px; padding-bottom: 10px; }
+.briefing-meta { display: flex; justify-content: space-between; font-size: 10px; color: var(--neon-blue); letter-spacing: 2px; }
+
+.intel-block { margin-bottom: 30px; }
+.intel-block h2 { color: var(--neon-blue); font-size: 14px; margin-bottom: 10px; letter-spacing: 1px; }
+.intel-block p { font-size: 13px; color: #ccc; line-height: 1.6; }
+
+.intel-block.highlight { background: rgba(0, 243, 255, 0.05); padding: 20px; border-left: 3px solid var(--neon-blue); }
+
+.rules-list li, .signals-list li { font-size: 13px; margin-bottom: 8px; color: white; list-style: none; }
+.rules-list strong, .signals-list strong { color: var(--neon-purple); }
+
+.academy-link {
+  background: transparent; border: 1px solid var(--neon-blue); color: var(--neon-blue);
+  padding: 10px 15px; cursor: pointer; font-family: 'Orbitron'; margin: 15px 0; font-size: 11px;
+}
+.academy-link:hover { background: var(--neon-blue); color: black; box-shadow: 0 0 15px var(--neon-blue); }
+
+.academy-btn { width: auto; padding: 15px 40px; }
